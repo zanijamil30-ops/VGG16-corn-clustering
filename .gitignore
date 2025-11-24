@@ -1,0 +1,46 @@
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment folders
+env/
+venv/
+.venv/
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Results and generated artifacts
+results/
+visualizations/
+*.npy
+*.npz
+*.png
+*.jpg
+*.jpeg
+
+# Dataset files (optional – remove if you want to store dataset)
+data/raw/
+data/processed/
+
+# Model files
+*.h5
+*.hdf5
+*.joblib
+*.pb
+
+# Logs
+*.log
+
+# TensorFlow / Keras cache
+*.ckpt
+checkpoint/
+
+# UMAP cache
+*.umap
