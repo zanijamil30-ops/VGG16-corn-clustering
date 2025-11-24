@@ -1,11 +1,28 @@
-🌽 Corn Kernel Clustering — Unsupervised Machine Learning Pipeline
+🌽 Corn Kernel Clustering — Unsupervised Machine Learning Project
 
-This project performs unsupervised clustering on corn kernel images using a complete computer vision + machine learning pipeline.
-It extracts visual features (color, texture, deep learning), applies dimensionality reduction (PCA, t-SNE, UMAP), runs multiple clustering algorithms, and evaluates how well the model discovers the three corn varieties.
+A complete unsupervised ML pipeline for clustering corn kernel images using traditional features (color histograms, LBP) and deep learning features (VGG16).
+Multiple clustering algorithms are compared and evaluated using internal and external metrics.
 
-📁 Dataset
+📁 Project Structure
+corn-kernel-clustering/
+│
+├── main.py                  # full end-to-end pipeline (preprocess → features → clustering)
+├── requirements.txt         # required Python libraries
+├── README.md                # project documentation
+├── .gitignore               # ignored files
+│
+├── results/                 # generated outputs (metrics, predictions)  [gitignored]
+│   └── README.md
+│
+├── visualizations/          # PCA, t-SNE, UMAP plots + sample images   [gitignored]
+│
+└── data/                    # dataset location (optional)
+    ├── raw/                 # original dataset ZIP (ignored)
+    └── processed/           # resized 224×224 images (ignored)
 
-The dataset contains 1,050 images of three Zea mays varieties:
+🔧 1. About the Project
+
+This project performs unsupervised clustering to automatically group images of three Zea mays (corn) varieties without using labels:
 
 Zea_mays_Chulpi_Cancha
 
@@ -13,184 +30,218 @@ Zea_mays_Indurata
 
 Zea_mays_Rugosa
 
-Each class has ~350 RGB images.
+A complete ML pipeline is implemented:
 
-Example dataset ZIP path used during development:
+Image preprocessing
 
-/mnt/data/Corn_3_Classes_Image_Dataset.zip
+Feature extraction
 
-🔧 Project Structure
-corn-clustering/
-│
-├── main.py                # complete pipeline
-├── requirements.txt       # install dependencies
-├── README.md              # project description
-├── .gitignore             # ignore cache & generated files
-│
-├── results.jpeg             
-└── visualizations.jpeg
+Dimensionality reduction
 
-🚀 Pipeline Overview
+Clustering
 
-This project contains six core steps, all implemented in main.py.
+Evaluation (internal & external)
 
-1. Preprocessing
+Visualization
 
-Unzip dataset
+🔍 2. Dataset Overview
 
-Resize images to 224×224
+1,050 total images
 
-Convert to RGB
+Balanced classes (350 per variety)
 
-Store processed images
+All images resized to 224 × 224 RGB
 
-Libraries Used:
-PIL, glob, os
+Used for representation learning and unsupervised classification
 
-2. Feature Extraction
+🧠 3. Feature Extraction
+3.1 Color Histograms (RGB – 8 bins × 3 channels)
 
-Three complementary feature types were extracted:
+Captures global color distribution
 
-✔ Color Histograms
-
-RGB histogram (8 bins × 3 channels)
-
-Captures overall color tone
+Functions used:
 
 numpy.histogram()
 
-✔ Local Binary Patterns (LBP)
+numpy.concatenate()
 
-Captures texture micro-patterns
+Pros: fast, simple
+
+Cons: no texture or shape information
+
+3.2 Local Binary Patterns (LBP)
+
+Captures surface texture patterns
+
+Useful because corn kernels differ in surface structure
+
+Functions used:
 
 skimage.feature.local_binary_pattern()
 
-✔ VGG16 Deep Features (Best Performers)
+skimage.color.rgb2gray()
 
-Pretrained CNN on ImageNet
+Feature dimension: P + 2 bins
 
-512-dimensional embeddings
+3.3 Deep Features (VGG16 – Best Performer)
 
-tensorflow.keras.applications.vgg16
+VGG16 pretrained on ImageNet
 
-3. Dimensionality Reduction
-✔ PCA
+Extracted 512-D deep embeddings from the avg-pooling layer
 
-Linear reduction
+Functions used:
 
-Helps visualize clusters in 2D/3D
+tensorflow.keras.applications.vgg16.VGG16()
 
-✔ t-SNE
+preprocess_input()
 
-Non-linear visualization
+model.predict()
 
-Reveals natural grouping
+Why deep features work best:
 
-✔ UMAP
+Capture shape, edges, texture, color, and semantic information
 
-Faster, preserves structure well
+Provide highly discriminative representations
 
-Libraries: sklearn, umap-learn
+Led to ARI ≈ 0.99, NMI ≈ 0.98
 
-4. Clustering Algorithms
+📉 4. Dimensionality Reduction
+4.1 PCA (Principal Component Analysis)
 
-Multiple clustering algorithms were applied and compared:
+Reduces dimensionality
 
-K-Means (Best performer)
+Useful for 2D/3D visualization
 
-Gaussian Mixture Models (GMM)
+Speeds up t-SNE
 
-Hierarchical Clustering
+sklearn.decomposition.PCA().fit_transform()
 
-DBSCAN
+4.2 t-SNE
 
-Spectral Clustering
+Non-linear dimensionality reduction
 
-Libraries: sklearn.cluster, scipy.cluster.hierarchy
+Reveals complex structure and cluster separation
 
-5. Evaluation Metrics
-Internal Metrics
+sklearn.manifold.TSNE()
 
-Evaluate clustering without labels:
+4.3 UMAP
 
-Metric	Meaning
-Silhouette Score	Separation quality
-Davies–Bouldin Index	Cluster compactness
-Calinski–Harabasz Score	Variance ratio
-External Metrics
+Faster and more scalable than t-SNE
 
-(Used only for analysis, not training)
+Preserves local + global manifold structure
 
-Metric	Meaning
-ARI	matches predicted vs. true labels
-NMI	shared information
-Confusion Matrix
+umap.UMAP().fit_transform()
 
-Shows cluster ↔ true class alignment.
+🤖 5. Clustering Algorithms
+5.1 K-Means (Primary Model)
 
-6. Visualization
+Minimizes within-cluster variance
 
-Figures include:
+Stable + fast
 
-PCA clusters
+Strong performance with deep embeddings
 
-t-SNE clusters
+sklearn.cluster.KMeans()
 
-UMAP clusters
+5.2 Gaussian Mixture Models (GMM)
 
-Sample images per cluster
+Soft (probabilistic) clustering
 
-Centroid (representative) images
+sklearn.mixture.GaussianMixture()
 
-Hierarchical dendrogram
+5.3 Hierarchical Clustering
 
-All plots saved to /visualizations/.
+Creates dendrogram to visualize merges
 
-⭐ Results Summary
-Algorithm	ARI	NMI
-K-Means	≈ 0.991	≈ 0.983
-GMM	≈ 0.991	≈ 0.983
-Spectral	≈ 0.988	≈ 0.979
-Hierarchical	≈ 0.972	≈ 0.954
-DBSCAN	Very poor	Very poor
+scipy.cluster.hierarchy.linkage()
 
-✔ Deep VGG16 embeddings + KMeans achieved near-perfect unsupervised clustering.
-✔ Clear separation in PCA, t-SNE, and UMAP visualizations.
-✔ Confusion matrix shows clusters almost perfectly match real classes.
+scipy.cluster.hierarchy.dendrogram()
 
-🧪 How to Run
-1. Install dependencies
-pip install -r requirements.txt
+5.4 DBSCAN
 
-2. Place dataset ZIP in data/ or anywhere local.
-3. Run the full pipeline
-python main.py
+Density-based clustering
 
+Good for noise/outlier detection
 
-Outputs will be saved in:
+Struggled due to high-dimensional space
 
-/results/
+sklearn.cluster.DBSCAN()
 
+5.5 Spectral Clustering
+
+Graph-based clustering
+
+Works for non-spherical clusters
+
+sklearn.cluster.SpectralClustering()
+
+📊 6. Evaluation Metrics
+6.1 Internal Metrics (Unsupervised)
+Metric	Meaning	Good When	Function
+Silhouette Score	Separation between clusters	→ closer to 1	silhouette_score()
+Davies–Bouldin Index	Cluster compactness	→ closer to 0	davies_bouldin_score()
+Calinski–Harabasz	Variance ratio	→ higher is better	calinski_harabasz_score()
+
+Observed Values:
+
+Silhouette ≈ 0.13
+
+DB Index ≈ 2.80
+
+CH Score ≈ 116
+
+(Silhouette low due to high-dimensional deep embeddings — normal + acceptable)
+
+6.2 External Metrics (Using True Labels for Analysis Only)
+Metric	Meaning	Range	Function
+ARI	Matching predicted vs true labels	0 → 1	adjusted_rand_score()
+NMI	Shared information	0 → 1	normalized_mutual_info_score()
+
+Observed:
+
+ARI ≈ 0.9914
+
+NMI ≈ 0.9834
+
+Excellent performance.
+
+6.3 Confusion Matrix
+
+sklearn.metrics.confusion_matrix()
+
+Nearly perfect diagonal → clusters match real classes almost exactly.
+
+🖼️ 7. Visualizations
+Visualization	Purpose
+PCA plot	Linear separability check
+t-SNE plot	Non-linear structure visualization
+UMAP plot	Preserves local/global geometry
+Sample images per cluster	Qualitative cluster validation
+Centroid images	Representative cluster images
+Dendrogram	Visualizes hierarchical merging
+
+Visualizations saved in:
 /visualizations/
 
-📌 Technologies Used
+🏆 8. Results Summary
+Clustering Performance Comparison
+Algorithm	ARI	NMI	Remarks
+K-Means	0.991	0.983	★ Best performer
+GMM	0.991	0.983	Same as K-Means
+Spectral	0.988	0.979	Very strong
+Hierarchical	0.972	0.954	Good
+DBSCAN	Poor	Poor	Failed due to high-dimensional space
+🧠 9. Why K-Means + VGG16 Is the Best Model
 
-Python
+K-Means with deep VGG16 embeddings consistently produced the highest clustering accuracy.
+This combination is:
 
-NumPy
+Highly discriminative (captures texture, shape, color)
 
-Scikit-Learn
+Fast and stable
 
-SciPy
+Nearly identical to true class labels
 
-Matplotlib
+Simple to implement and deploy
 
-Scikit-Image
-
-TensorFlow / Keras
-
-UMAP
-
-📄 License
-
- MIT License
+With ARI ≈ 0.99 and NMI ≈ 0.98, it is the most reliable and practical model for real-world use.
