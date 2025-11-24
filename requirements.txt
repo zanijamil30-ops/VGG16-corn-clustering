@@ -1,0 +1,9 @@
+numpy
+pandas
+scikit-learn
+scikit-image
+matplotlib
+pillow
+tensorflow
+umap-learn
+scipy
