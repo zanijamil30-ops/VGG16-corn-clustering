@@ -7,7 +7,6 @@ Best results were achieved with **K-Means on VGG16 embeddings**.
 
 ## 🔗 Links
 
-- 📁 **Local Dataset:** `/mnt/data/Corn_3_Classes_Image_Dataset.zip`
 - 🌐 **Kaggle Dataset:** https://www.kaggle.com/datasets/muratkokludataset/pumpkin-seeds-dataset
 
 ---
@@ -25,25 +24,26 @@ Best results were achieved with **K-Means on VGG16 embeddings**.
 ## ▶️ Quick Start
 
 ### 1️⃣ Install
-```bash
 pip install -r requirements.txt
-2️⃣ Run Pipeline
-bash
-Copy code
+
+### 2️⃣ Run Pipeline
 python main.py
-Outputs
-bash
-Copy code
+
+### Outputs
 results/          # feature files, predictions, metrics.json  
 visualizations/   # PCA, t-SNE, UMAP, dendrogram, sample grids  
-📈 Results Summary
-Algorithm	ARI	NMI	Notes
-K-Means (VGG16)	0.991	0.983	✅ Best performer
-GMM	0.991	0.983	Similar performance
-Spectral/Hier	0.97–0.99	0.95–0.98	Very good
-DBSCAN	Poor	Poor	❌ Not suitable for high-dim features
 
-📝 Notes & Tips
+## 📈 Results Summary
+
+| Algorithm            | ARI      | NMI      | Notes                                |
+|---------------------:|:--------:|:--------:|:-------------------------------------|
+| **K-Means (VGG16)**  | **0.991**| **0.983**| ✅ Best performer                     |
+| GMM                  | 0.991    | 0.983    | Similar performance                   |
+| Spectral / Hierarch. | 0.97–0.99| 0.95–0.98| Very good                             |
+| DBSCAN               | Poor     | Poor     | ❌ Not suitable for high-dimensional features |
+
+
+### 📝 Notes & Tips
 Set seeds: np.random.seed(42), random.seed(42)
 
 Save intermediate arrays: features_combined.npy, meta.npy
